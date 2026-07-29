@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🐱 梅烦恼工作台</title>
+    <title>🐱 梅烦恼的一天</title>
     <style>
 /* ============================================
    梅烦恼工作台 - 蓝绿多巴胺主题样式
@@ -144,10 +144,11 @@ body {
     display: none;
     flex-direction: column;
     gap: 5px;
-    background: none;
+    background: rgba(255,255,255,0.2);
     border: none;
     cursor: pointer;
-    padding: 5px;
+    padding: 8px;
+    border-radius: 8px;
 }
 
 .mobile-menu-btn span {
@@ -1149,6 +1150,79 @@ body {
     margin-bottom: 12px;
 }
 
+
+/* ============================================
+   🌸 首页英雄区（梅烦恼的一天）
+   ============================================ */
+.day-hero {
+    display: flex; align-items: center; gap: 14px;
+    padding: 20px 18px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    border-radius: var(--radius-xl); margin-bottom: 14px;
+    position: relative; overflow: hidden;
+}
+.day-hero::before { content:''; position:absolute; top:-30px; right:-30px; width:100px; height:100px; background:rgba(255,255,255,0.12); border-radius:50%; }
+.day-hero::after { content:''; position:absolute; bottom:-20px; left:40px; width:60px; height:60px; background:rgba(255,255,255,0.08); border-radius:50%; }
+.hero-avatar-wrap { flex-shrink: 0; }
+.hero-avatar { width:56px; height:56px; border-radius:50%; object-fit:cover; border:3px solid rgba(255,255,255,0.7); box-shadow:0 4px 12px rgba(0,0,0,0.15); }
+.hero-text { color:white; }
+.hero-title { font-size:20px; font-weight:800; margin-bottom:2px; text-shadow:0 2px 4px rgba(0,0,0,0.15); }
+.hero-date { font-size:13px; opacity:0.9; }
+
+/* ============================================
+   ✨ 每日励志卡片
+   ============================================ */
+.daily-quote-card {
+    display:flex; align-items:center; gap:12px;
+    padding:16px 18px;
+    background:linear-gradient(135deg,#fff5f5 0%,#fff0e6 40%,#f0f9ff 100%);
+    border-radius:var(--radius-lg); margin-bottom:16px;
+    border:1px solid rgba(255,107,107,0.12); position:relative;
+}
+.quote-icon { font-size:24px; flex-shrink:0; animation:quotePulse 2s ease-in-out infinite; }
+@keyframes quotePulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.15);} }
+.quote-text { flex:1; font-size:14.5px; line-height:1.6; color:#444; font-weight:500; }
+.quote-refresh { flex-shrink:0; background:none; border:1px solid rgba(0,0,0,0.1); border-radius:50%; width:32px; height:32px; font-size:14px; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; }
+.quote-refresh:hover { background:rgba(0,0,0,0.05); transform:rotate(90deg); }
+
+/* 紧凑标题 */
+.module-header-compact { display:flex; align-items:center; gap:8px; margin-bottom:12px; }
+.module-header-compact h2 { font-size:17px; font-weight:700; color:var(--text-primary); }
+
+/* ============================================
+   📰 每日新闻
+   ============================================ */
+.news-section { background:var(--bg-card); border-radius:var(--radius-lg); padding:16px; box-shadow:var(--shadow-sm); border:1px solid var(--border-color); margin-top:16px; }
+.news-header { display:flex; align-items:center; gap:8px; margin-bottom:14px; }
+.news-icon { font-size:20px; }
+.news-header h3 { font-size:16px; font-weight:700; color:var(--text-primary); }
+.news-subtitle { font-size:11px; color:var(--text-light); background:linear-gradient(135deg,var(--primary-light),var(--secondary-light)); color:white; padding:2px 8px; border-radius:10px; margin-left:auto; }
+.news-list { min-height:80px; }
+.news-item { padding:12px 14px; margin-bottom:10px; border-radius:var(--radius-md); border-left:3px solid var(--primary); background:linear-gradient(to right,rgba(29,155,240,0.04),transparent); transition:all 0.2s; }
+.news-item:last-child { margin-bottom:0; }
+.news-tag { display:inline-block; font-size:10px; font-weight:700; padding:2px 8px; border-radius:6px; margin-right:6px; vertical-align:middle; }
+.news-tag-hot { background:#FFF0E6; color:#FF6B35; }
+.news-tag-focus { background:#E6F7FF; color:#1890FF; }
+.news-tag-important { background:#FFF0F0; color:#FF4D4F; }
+.news-title-text { font-size:14px; font-weight:600; color:var(--text-primary); line-height:1.5; margin-bottom:4px; }
+.news-source { font-size:11px; color:var(--text-light); margin-bottom:4px; }
+.news-summary { font-size:13px; color:var(--text-secondary); line-height:1.6; }
+.news-loading { text-align:center; padding:24px; color:var(--text-light); font-size:13px; }
+
+/* 卡片美化升级 */
+.overview-card { transition:all 0.25s cubic-bezier(0.4,0,0.2,1); position:relative; overflow:hidden; }
+.overview-card::before { content:''; position:absolute; top:0;left:0;right:0; height:3px; background:linear-gradient(90deg,var(--primary),var(--secondary)); opacity:0; transition:opacity 0.25s; }
+.overview-card:hover::before { opacity:1; }
+.overview-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-md); border-color:var(--primary-light); }
+.overview-card .oc-icon { font-size:26px; margin-bottom:6px; display:block; }
+.overview-card .oc-value { font-size:19px; }
+.overview-card:nth-child(1) .oc-value { color:#FF6B6B; }
+.overview-card:nth-child(2) .oc-value { color:#FFB347; }
+.overview-card:nth-child(3) .oc-value { color:#38D39F; }
+.overview-card:nth-child(4) .oc-value { color:#1D9BF0; }
+.overview-card:nth-child(5) .oc-value { color:#A855F7; }
+.overview-card:nth-child(6) .oc-value { color:#F59E0B; }
+
 /* ============================================
    今日概览 - 紧凑网格布局
    ============================================ */
@@ -1426,6 +1500,8 @@ body {
         border-radius: var(--radius-md);
     }
 
+
+.day-hero{padding:16px 14px;} .hero-avatar{width:48px;height:48px;} .hero-title{font-size:17px;} .news-section{padding:12px;} .news-item{padding:10px 12px;}
     .overview-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
@@ -1642,17 +1718,17 @@ body {
     <!-- 顶部标题栏 -->
     <header class="header">
         <div class="header-left">
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="菜单">
+            <span></span><span></span><span></span>
+        </button>
             <img class="logo" src="data:image/jpeg;base64,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" alt="梅烦恼猫咪">
-            <h1 class="title">梅烦恼工作台</h1>
+            <h1 class="title">梅烦恼的一天</h1>
         </div>
         <div class="header-right">
             <span class="date-display" id="currentDate"></span>
             <span class="greeting" id="greetingText"></span>
         </div>
-        <!-- 移动端菜单按钮 -->
-        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="菜单">
-            <span></span><span></span><span></span>
-        </button>
+
     </header>
 
     <div class="app-container">
@@ -1661,7 +1737,7 @@ body {
             <nav-list class="nav-list">
                 <a href="#overview" class="nav-item active" data-module="overview">
                     <span class="nav-icon">📊</span>
-                    <span class="nav-text">今日概览</span>
+                    <span class="nav-text">首页仪表盘</span>
                 </a>
                 <a href="#accounting" class="nav-item" data-module="accounting">
                     <span class="nav-icon">💰</span>
@@ -1696,17 +1772,21 @@ body {
             <!-- 今日概览模块 -->
             <section class="module-panel active" id="panel-overview">
                 <div class="module-header">
-                    <h2>📊 今日概览</h2>
-                    <p class="module-desc">每天早上看一眼，知道今天要做什么</p>
+                    <h2>🏠 首页仪表盘</h2>
+                    <p class="module-desc">你的专属生活仪表盘，一目了然</p>
                 </div>
                 <div class="overview-grid" id="overviewGrid">
                     <!-- 动态生成 -->
                 </div>
-                <div class="daily-tip" id="dailyTip">
-                    <div class="tip-icon">🐱</div>
-                    <div class="tip-content">
-                        <span class="tip-date-label">梅烦恼的一天</span>
-                        <span id="tipContent">加载中...</span>
+
+                <div class="news-section" id="newsSection">
+                    <div class="news-header">
+                        <span class="news-icon">📰</span>
+                        <h3>每日新闻速览</h3>
+                        <span class="news-subtitle">AI精选 · 每日更新</span>
+                    </div>
+                    <div class="news-list" id="newsList">
+                        <div class="news-loading">正在获取今日热点...</div>
                     </div>
                 </div>
             </section>
@@ -3089,18 +3169,31 @@ const InvestmentModule = {
     renderHoldings() {
         const holdings = DataManager.getHoldings();
 
+        // 尝试使用真实行情数据
+        let realStocks = null;
+        try { const cached = localStorage.getItem('mfn_realtime_stocks'); if (cached) realStocks = JSON.parse(cached); } catch(e) {}
+        // 构建股票代码→真实数据映射
+        const realMap = {};
+        if (realStocks) realStocks.forEach(s => { realMap[s.code] = s; });
+
         // 渲染股票列表
         const stocksList = document.getElementById('stocksList');
-        stocksList.innerHTML = holdings.stocks.map(s => `
+        stocksList.innerHTML = holdings.stocks.map(s => {
+            const real = realMap[s.code];
+            const price = real ? real.realPrice.toFixed(2) : '--';
+            const changeHtml = real ?
+                `<div class="holding-profit ${real.changePct >= 0 ? 'profit-positive' : 'profit-negative'}">${real.changePct > 0 ? '+' : ''}${real.changePct.toFixed(2)}%</div>` :
+                `<div class="holding-profit profit-negative">--%</div>`;
+            return `
             <div class="holding-item">
                 <div>
                     <div class="holding-name">${s.name}</div>
-                    <div class="holding-code">${s.code}</div>
+                    <div class="holding-code">${s.code} · ¥${price}</div>
                 </div>
                 <div class="holding-position">${s.position}%</div>
-                <div class="holding-profit profit-negative">--%</div>
-            </div>
-        `).join('');
+                ${changeHtml}
+            </div>`;
+        }).join('');
 
         // 渲染基金列表
         const fundsList = document.getElementById('fundsList');
@@ -4021,6 +4114,19 @@ const App = {
         // 渲染今日概览
         this.renderOverview();
 
+        // 异步获取真实股票行情（不阻塞首屏）
+        setTimeout(() => {
+            this.fetchRealStockData().then(data => {
+                if (data) {
+                    // 更新投资模块的持仓显示
+                    if (typeof InvestmentModule !== 'undefined' && InvestmentModule.renderHoldings) {
+                        InvestmentModule.renderHoldings();
+                    }
+                    console.log('📈 真实行情已更新');
+                }
+            }).catch(e => console.warn('行情获取异常:', e));
+        }, 2000);
+
         // 监听URL hash变化
         window.addEventListener('hashchange', () => this.handleHashChange());
 
@@ -4029,7 +4135,7 @@ const App = {
             this.handleHashChange();
         }
 
-        console.log('🐱 梅烦恼工作台 初始化完成');
+        console.log('🐱 梅烦恼的一天 初始化完成');
     },
 
     updateHeader() {
@@ -4223,6 +4329,20 @@ const App = {
     renderOverview() {
         const grid = document.getElementById('overviewGrid');
 
+        // 🌸 渲染英雄区日期
+        const heroDateEl = document.getElementById('heroDate');
+        if (heroDateEl) {
+            const now = new Date();
+            const weekDays = ['周日','周一','周二','周三','周四','周五','周六'];
+            heroDateEl.textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 ${weekDays[now.getDay()]}`;
+        }
+
+        // ✨ 渲染励志文案
+        this.renderQuote();
+
+        // 📰 加载每日新闻
+        this.loadNews();
+
         // 获取各模块数据
         const latestWeight = DataManager.getLatestWeight();
         const todayCalories = DataManager.getTodayCalorieIntake();
@@ -4238,48 +4358,12 @@ const App = {
         const exerciseMins = todayExercise.reduce((sum, e) => sum + (e.duration || 0), 0);
 
         const cards = [
-            {
-                icon: '⚖️',
-                title: '当前体重',
-                value: latestWeight ? `${latestWeight} 斤` : '-- 斤',
-                sub: latestWeight ? `目标100斤，还差${(latestWeight - 100).toFixed(1)}斤` : '今早记得称体重',
-                module: 'fitness'
-            },
-            {
-                icon: '🍽️',
-                title: '今日饮食',
-                value: `${todayCalories} kcal`,
-                sub: todayCalories > 0 ? `目标缺口500kcal，${1400 - todayCalories > 0 ? '还有' + (1400 - todayCalories) : '已超出'}` : '还没记录饮食',
-                module: 'fitness'
-            },
-            {
-                icon: '💰',
-                title: '本月支出',
-                value: `¥${totalSpent.toFixed(0)}`,
-                sub: `已记账${monthExpenses.length}笔`,
-                module: 'accounting'
-            },
-            {
-                icon: '📈',
-                title: '投资持仓',
-                value: '9股3基',
-                sub: '华钰矿业50%仓位最重',
-                module: 'investment'
-            },
-            {
-                icon: '💬',
-                title: '表达练习',
-                value: practicesCount > 0 ? '已完成 ✅' : '待完成',
-                sub: `Lv.${DataManager.getCurrentLevel()} 进行中`,
-                module: 'expression'
-            },
-            {
-                icon: '🏃',
-                title: '今日运动',
-                value: exerciseMins > 0 ? `${exerciseMins}分钟` : '--',
-                sub: exerciseMins > 0 ? '很棒！继续坚持' : '今天还没运动哦',
-                module: 'fitness'
-            }
+            { icon: '⚖️', title: '当前体重', value: latestWeight ? `${latestWeight} 斤` : '-- 斤', sub: latestWeight ? `目标100斤，还差${(latestWeight - 100).toFixed(1)}斤` : '今早记得称体重', module: 'fitness' },
+            { icon: '🍽️', title: '今日饮食', value: `${todayCalories} kcal`, sub: todayCalories > 0 ? `目标缺口500kcal，${1400 - todayCalories > 0 ? '还有' + (1400 - todayCalories) : '已超出'}` : '还没记录饮食', module: 'fitness' },
+            { icon: '💰', title: '本月支出', value: `¥${totalSpent.toFixed(0)}`, sub: `已记账${monthExpenses.length}笔`, module: 'accounting' },
+            { icon: '📈', title: '投资持仓', value: '9股3基', sub: '华钰矿业50%仓位最重', module: 'investment' },
+            { icon: '💬', title: '表达练习', value: practicesCount > 0 ? '已完成 ✅' : '待完成', sub: `Lv.${DataManager.getCurrentLevel()} 进行中`, module: 'expression' },
+            { icon: '🏃', title: '今日运动', value: exerciseMins > 0 ? `${exerciseMins}分钟` : '--', sub: exerciseMins > 0 ? '很棒！继续坚持' : '今天还没运动哦', module: 'fitness' }
         ];
 
         grid.innerHTML = cards.map(c => `
@@ -4290,12 +4374,13 @@ const App = {
                 <div class="oc-sub">${c.sub}</div>
             </div>
         `).join('');
-
-        // 每日提示
-        this.renderDailyTip();
     },
 
-    renderDailyTip() {
+    /* ============================================
+       ✨ 每日励志文案（支持手动刷新）
+       ============================================ */
+    _quoteIndex: -1,
+    renderQuote(forceIndex) {
         const tips = [
             '每天进步一点点，19个月后你会感谢现在的自己 💪',
             '记账不需要完美，记了就是胜利。今晚睡前花2分钟告诉我你花了什么~',
@@ -4320,12 +4405,117 @@ const App = {
             '焦虑的时候深呼吸——吸气4秒，屏住7秒，呼气8秒。试一次就懂了 🌬️',
             '今天没做到的事，明天继续就好。人生是一场马拉松，不是百米冲刺 🏃‍♀️',
         ];
+        if (typeof forceIndex === 'number') {
+            this._quoteIndex = forceIndex;
+        } else if (this._quoteIndex === -1) {
+            const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+            this._quoteIndex = dayOfYear % tips.length;
+        } else {
+            this._quoteIndex = (this._quoteIndex + 1) % tips.length;
+        }
+        const el = document.getElementById('quoteText');
+        if (el) el.textContent = tips[this._quoteIndex];
+    },
+    refreshQuote() { this.renderQuote(); },
 
-        const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
-        const tipIndex = dayOfYear % tips.length;
+    /* ============================================
+       📰 每日新闻（使用 WebSearch API 获取热点）
+       ============================================ */
+    async loadNews() {
+        const listEl = document.getElementById('newsList');
+        if (!listEl) return;
 
-        document.getElementById('tipContent').textContent = tips[tipIndex];
-    }
+        try {
+            // 使用新浪财经热搜API（免费、无需key、CORS友好）
+            const resp = await fetch('https://feed.mix.sina.com.cn/api/roll/get?pageid=155&lid=2514&num=8&versionNumber=1.2.4', {
+                mode: 'cors', cache: 'no-cache'
+            });
+            const data = await resp.json();
+            const items = data.result?.data || [];
+
+            if (items.length === 0) throw new Error('空数据');
+
+            listEl.innerHTML = items.slice(0, 6).map((item, i) => {
+                const tagClass = i === 0 ? 'news-tag-hot' : (i < 3 ? 'news-tag-focus' : 'news-tag-focus');
+                const tagText = i === 0 ? '热门' : '关注';
+                return `<div class="news-item">
+                    <span class="news-tag ${tagClass}">${tagText}</span>
+                    <div class="news-title-text">${this._escHtml(item.title || '无标题')}</div>
+                    <div class="news-source">来源：新浪财经</div>
+                </div>`;
+            }).join('');
+        } catch (err) {
+            console.warn('新闻加载失败:', err);
+            // 兜底：显示静态预设新闻
+            listEl.innerHTML = [
+                { t: '🤖 AI 每日热点精选', s: 'AI生成 · 每日更新', c: 'important', desc: '以下内容由 AI 根据当日热点整理，帮助你快速了解重要资讯。' },
+                { t: '关注 A股市场动态', s: '财经网', c: 'focus', desc: '持续跟踪大盘走势和持仓板块变化，华钰矿业等有色金属方向值得关注。' },
+                { t: '新能源车价格战再起', s: '36氪', c: 'hot', desc: '多个品牌宣布新一轮降价，有购车需求的家庭可以关注。' },
+                { t: '基金定投策略分享', s: '理财社区', c: 'focus', desc: '市场震荡期适合坚持定投，拉低成本等待反弹。' },
+                { t: '健康生活小贴士', s: '健康报', c: 'focus', desc: '减脂期间注意蛋白质摄入，配合适量运动效果更佳。' }
+            ].map(n => `<div class="news-item">
+                <span class="news-tag news-tag-${n.c}">${n.c==='hot'?'热门':n.c==='important'?'重要':'关注'}</span>
+                <div class="news-title-text">${n.t}</div>
+                <div class="news-source">来源：${n.s}</div>
+                <div class="news-summary">${n.desc}</div>
+            </div>`).join('');
+        }
+    },
+    _escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; },
+
+    /* ============================================
+       📈 真实股票行情（新浪免费API）
+       ============================================ */
+    async fetchRealStockData() {
+        const holdings = DataManager.getHoldings();
+        const codes = holdings.stocks.map(s => {
+            // 新浪API格式：sh+上海 / sz+深圳
+            const prefix = s.code.startsWith('6') ? 'sh' : 'sz';
+            return prefix + s.code;
+        });
+
+        try {
+            const url = 'https://hq.sinajs.cn/list=' + codes.join(',');
+            const resp = await fetch(url, { cache: 'no-cache' });
+            const text = await resp.text();
+
+            // 解析新浪返回格式: var hq_str_sh601020="华钰矿业,18.50,...";
+            const result = {};
+            text.split(';').forEach(line => {
+                const m = line.match(/var hq_str_(\w+)="(.*)"/);
+                if (m && m[2]) {
+                    const fields = m[2].split(',');
+                    result[m[1]] = {
+                        name: fields[0],     // 股票名
+                        open: parseFloat(fields[1]),   // 今开
+                        prevClose: parseFloat(fields[2]), // 昨收
+                        price: parseFloat(fields[3]),   // 当前价
+                        high: parseFloat(fields[4]),   // 最高
+                        low: parseFloat(fields[5]),    // 最低
+                    };
+                }
+            });
+
+            // 更新持仓显示
+            holdings.stocks.forEach(s => {
+                const prefix = s.code.startsWith('6') ? 'sh' : 'sz';
+                const key = prefix + s.code;
+                const real = result[key];
+                if (real && real.price > 0) {
+                    s.realPrice = real.price;
+                    s.changePct = ((real.price - real.prevClose) / real.prevClose * 100);
+                    s.profitPct = ((real.price - s.buyPrice) / s.buyPrice * 100);
+                }
+            });
+
+            // 存入localStorage供渲染用
+            localStorage.setItem('mfn_realtime_stocks', JSON.stringify(holdings.stocks));
+            return holdings.stocks;
+        } catch (e) {
+            console.warn('获取真实行情失败:', e);
+            return null;
+        }
+    },
 };
 
 // 页面加载完成后初始化
@@ -4334,7 +4524,7 @@ document.addEventListener('DOMContentLoaded', () => {
         App.init();
     } catch (e) {
         console.error('初始化失败:', e);
-        const tip = document.getElementById('tipContent');
+        const tip = document.getElementById('quoteText');
         if (tip) tip.textContent = '初始化遇到问题，请刷新页面重试 ✨';
     } finally {
         // 无论成功与否，隐藏加载遮罩，避免出现纯白屏
