@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🌸 梅烦恼工作台</title>
+    <title>🐱 梅烦恼工作台</title>
     <style>
 /* ============================================
    梅烦恼工作台 - 蓝绿多巴胺主题样式
@@ -103,8 +103,12 @@ body {
 }
 
 .logo {
-    font-size: 24px;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255,255,255,0.8);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
 .title {
@@ -1146,71 +1150,106 @@ body {
 }
 
 /* ============================================
-   今日概览
+   今日概览 - 紧凑网格布局
    ============================================ */
 .overview-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
 }
 
 .overview-card {
     background: var(--bg-card);
-    border-radius: var(--radius-lg);
-    padding: 20px;
+    border-radius: var(--radius-md);
+    padding: 14px 12px;
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--border-color);
     transition: var(--transition);
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
 .overview-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
     box-shadow: var(--shadow-md);
 }
 
 .overview-card .oc-icon {
-    font-size: 28px;
-    margin-bottom: 8px;
+    font-size: 22px;
+    margin-bottom: 4px;
 }
 
 .overview-card .oc-title {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--text-secondary);
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 .overview-card .oc-value {
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 800;
     color: var(--primary);
+    line-height: 1.2;
 }
 
 .overview-card .oc-sub {
-    font-size: 12px;
+    font-size: 10px;
     color: var(--text-light);
-    margin-top: 4px;
+    margin-top: 2px;
+    line-height: 1.3;
 }
 
+/* ============================================
+   梅烦恼的一天 - 每日正能量
+   ============================================ */
 .daily-tip {
     display: flex;
-    gap: 12px;
-    padding: 16px 20px;
-    background: linear-gradient(135deg, var(--accent) 0%, #F0FFF4 100%);
+    gap: 14px;
+    padding: 16px 18px;
+    background: linear-gradient(135deg, #FFF5F8 0%, #FFF0E6 50%, #F0F9FF 100%);
     border-radius: var(--radius-lg);
-    border: 1px solid rgba(56, 211, 159, 0.3);
+    border: 1px solid rgba(255, 107, 107, 0.15);
+    position: relative;
+    overflow: hidden;
 }
 
-.tip-icon {
-    font-size: 24px;
+.daily-tip::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255, 179, 71, 0.1);
 }
 
-.tip-content {
+.daily-tip .tip-icon {
+    font-size: 28px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.daily-tip .tip-content {
     font-size: 14px;
     line-height: 1.7;
-    color: var(--text-secondary);
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.daily-tip .tip-date-label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-light);
+    margin-bottom: 4px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
 /* ============================================
@@ -1388,8 +1427,8 @@ body {
     }
 
     .overview-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
     }
 
     .goal-numbers {
@@ -1442,7 +1481,20 @@ body {
 /* 小屏手机（<=400px） */
 @media (max-width: 400px) {
     .overview-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+    }
+
+    .overview-card {
+        padding: 10px 8px;
+    }
+
+    .overview-card .oc-icon {
+        font-size: 18px;
+    }
+
+    .overview-card .oc-value {
+        font-size: 15px;
     }
 
     .ai-tools-grid {
@@ -1590,7 +1642,7 @@ body {
     <!-- 顶部标题栏 -->
     <header class="header">
         <div class="header-left">
-            <span class="logo">🌸</span>
+            <img class="logo" src="data:image/jpeg;base64,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" alt="梅烦恼猫咪">
             <h1 class="title">梅烦恼工作台</h1>
         </div>
         <div class="header-right">
@@ -1651,8 +1703,11 @@ body {
                     <!-- 动态生成 -->
                 </div>
                 <div class="daily-tip" id="dailyTip">
-                    <div class="tip-icon">💡</div>
-                    <div class="tip-content" id="tipContent">加载中...</div>
+                    <div class="tip-icon">🐱</div>
+                    <div class="tip-content">
+                        <span class="tip-date-label">梅烦恼的一天</span>
+                        <span id="tipContent">加载中...</span>
+                    </div>
                 </div>
             </section>
 
@@ -2095,7 +2150,7 @@ body {
     <!-- 加载遮罩：初始化完成前显示，避免白屏无反馈 -->
     <div class="loading-mask" id="loadingMask">
         <div class="loading-content">
-            <div class="loading-spinner">🌸</div>
+            <div class="loading-spinner">🐱</div>
             <p>梅烦恼工作台加载中...</p>
         </div>
     </div>
@@ -3974,7 +4029,7 @@ const App = {
             this.handleHashChange();
         }
 
-        console.log('🌸 梅烦恼工作台 初始化完成');
+        console.log('🐱 梅烦恼工作台 初始化完成');
     },
 
     updateHeader() {
@@ -4250,6 +4305,20 @@ const App = {
             'AI不是来替代你的，是来帮你更高效地完成事情的。学会用它，它会成为你的超级助手 🤖',
             '减脂餐不是唯一的答案，关键的是热量缺口。偶尔吃顿好的不会毁掉你的努力 🍕',
             '投资学习最重要的是建立自己的判断体系，跟着老师学的同时也要多问"为什么"',
+            '今天也是值得被爱的一天，你已经比昨天的自己更好了 ✨',
+            '不要和别人比进度，每个人的花期不同。你在走你自己的路 🌸',
+            '早起的那10分钟，是你一天中最清醒、最属于自己的时间 ☀️',
+            '遇到不懂的投资术语别慌，查清楚搞明白的那一刻就是你进步的时刻 📚',
+            '运动不是为了惩罚昨天吃多的自己，是为了让未来的自己更强 💪',
+            '说话前先想3秒，这一个小习惯能让你少说80%的后悔的话 💬',
+            '存钱不是不花钱，是让每一分钱都花在真正让你开心的事情上 💰',
+            '今天的你辛苦了，无论完成了多少，都值得给自己一个微笑 😊',
+            '学AI就像学骑自行车，一开始摇摇晃晃很正常，关键是别放弃 🚲',
+            '婚礼倒计时每减少一天，你就离最好的自己更近一步 💍',
+            '不需要完美的一天，只需要开始的一天。行动本身就是最大的力量 🔥',
+            '两只猫咪贴贴都能这么幸福，你也一定可以拥有属于你的温暖 🐱💕',
+            '焦虑的时候深呼吸——吸气4秒，屏住7秒，呼气8秒。试一次就懂了 🌬️',
+            '今天没做到的事，明天继续就好。人生是一场马拉松，不是百米冲刺 🏃‍♀️',
         ];
 
         const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
