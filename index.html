@@ -492,6 +492,16 @@ body {
     margin-top: 12px;
 }
 
+.note-translation {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    background: rgba(56,211,159,0.06);
+    padding: 8px 10px;
+    border-radius: 8px;
+    margin-top: 6px;
+}
+
 .expense-item, .note-item, .weight-item, .diet-item, .exercise-item,
 .practice-item, .inspiration-item, .cnote-item, .ainews-item, .trend-item {
     display: flex;
@@ -618,25 +628,42 @@ body {
 
 /* 知识库 */
 .knowledge-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--border-color);
+    padding: 14px 16px;
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: var(--transition);
 }
+.knowledge-item:hover { border-color: var(--primary-light); background: rgba(29,155,240,0.03); }
+.k-head { display: flex; align-items: center; gap: 10px; }
+.k-arrow { margin-left: auto; color: var(--text-light); transition: transform 0.2s; }
+.knowledge-item.expanded .k-arrow { transform: rotate(90deg); }
+.k-detail {
+    display: none;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border-color);
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+.knowledge-item.expanded .k-detail { display: block; }
 
 .k-tag {
     padding: 2px 8px;
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
     background: var(--accent);
     color: var(--primary);
+    flex-shrink: 0;
 }
 
 .k-title {
-    flex: 1;
     font-size: 14px;
+    font-weight: 600;
 }
 
 .k-status {
@@ -1103,6 +1130,56 @@ body {
     transition: var(--transition);
     border: 1px solid var(--border-color);
 }
+
+
+/* 存钱记录卡片 */
+.savings-record-card { margin-top: 16px; }
+.savings-input-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.savings-input-row input { flex: 1; }
+.savings-total { font-size: 15px; margin-bottom: 8px; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
+.savings-history { max-height: 200px; overflow-y: auto; }
+
+
+/* 可展开卡片通用样式（趋势/笔记/工具/资讯） */
+.trend-head, .cnote-head, .ainews-head {
+    display: flex; align-items: center; gap: 8px; cursor: pointer;
+}
+.trend-arrow, .cnote-arrow, .ainews-arrow {
+    margin-left: auto; color: var(--text-light); transition: transform 0.2s; font-size: 12px;
+}
+.trend-item.expanded .trend-arrow,
+.cnote-item.expanded .cnote-arrow,
+.ainews-item.expanded .ainews-arrow { transform: rotate(90deg); }
+.trend-detail, .cnote-detail, .ainews-detail, .tool-detail {
+    display: none;
+    margin-top: 8px; padding-top: 8px;
+    border-top: 1px dashed var(--border-color);
+    font-size: 13px; color: var(--text-secondary); line-height: 1.7;
+}
+.trend-item.expanded .trend-detail,
+.cnote-item.expanded .cnote-detail,
+.ainews-item.expanded .ainews-detail,
+.tool-card.expanded .tool-detail { display: block; }
+.trend-item, .cnote-item, .ainews-item, .tool-card {
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    margin-bottom: 8px;
+    background: var(--bg-card);
+    cursor: pointer;
+    transition: var(--transition);
+}
+.trend-item:hover, .cnote-item:hover, .ainews-item:hover, .tool-card:hover {
+    border-color: var(--primary-light); background: rgba(29,155,240,0.03);
+}
+.tool-detail { font-size: 13px; line-height: 1.7; color: var(--text-secondary);
+    background: rgba(56,211,159,0.06); padding: 10px; border-radius: 8px; margin-top: 8px; }
+.trend-tag, .cnote-tag, .ainews-tag {
+    font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;
+    background: var(--accent); color: var(--primary); flex-shrink: 0;
+}
+.trend-title, .cnote-title, .ainews-title { font-size: 14px; font-weight: 600; flex: 1; }
+.trend-link { color: var(--primary); font-size: 12px; text-decoration: none; }
 
 .tool-card:hover {
     border-color: var(--primary-light);
@@ -1813,7 +1890,8 @@ body {
                 </div>
                 <!-- 快速记账 -->
                 <div class="card quick-record-card">
-                    <h3>今晚花了什么？</h3>
+                    <h3>📝 今晚花了什么？</h3>
+                    <p class="sub-text">可一次输入多笔，用换行或逗号分开，如：午餐外卖35元，打车12元</p>
                     <div class="record-input-area">
                         <textarea id="expenseInput" placeholder="比如：午餐外卖35元，打车12元..." rows="3"></textarea>
                         <div class="quick-categories">
@@ -1825,6 +1903,17 @@ body {
                         </div>
                         <button class="btn-primary" id="submitExpense">记一笔 ✨</button>
                     </div>
+                </div>
+                <!-- 存钱记录 -->
+                <div class="card savings-record-card">
+                    <h3>🐷 今天存了多少钱？</h3>
+                    <div class="savings-input-row">
+                        <input type="number" id="saveInput" placeholder="输入存钱金额(元)" min="0" step="1">
+                        <span class="unit-label">元</span>
+                        <button class="btn-primary" id="submitSave">存一笔 💰</button>
+                    </div>
+                    <div class="savings-total" id="savingsTotal"></div>
+                    <div class="savings-history" id="savingsHistory"></div>
                 </div>
                 <!-- 本月支出记录 -->
                 <div class="card expense-history-card">
@@ -1857,43 +1946,44 @@ body {
                     <div class="holdings-list" id="stocksList"></div>
                     <div class="holdings-list hidden" id="fundsList"></div>
                 </div>
-                <!-- 每日复盘区（预留） -->
+                <!-- 每日复盘区 -->
                 <div class="card review-card">
-                    <h3>📝 每日复盘</h3>
+                    <h3>📝 每日复盘 & 行情刷新</h3>
                     <div class="review-placeholder">
-                        <p>⏰ 收盘后（15:30后）自动更新</p>
-                        <p class="sub-text">当前版本：手动触发 | 上线后：定时推送</p>
-                        <button class="btn-secondary" id="triggerReview">手动获取今日复盘</button>
+                        <p>📡 点击下方按钮，实时拉取你持仓的最新价格和涨跌</p>
+                        <button class="btn-secondary" id="triggerReview">🔄 刷新实时行情</button>
                     </div>
                     <div class="review-content hidden" id="reviewContent"></div>
                 </div>
-                <!-- 学习笔记 -->
+                <!-- 老师每日复盘 -->
                 <div class="card study-notes-card">
-                    <h3>📚 学习笔记</h3>
+                    <h3>📚 老师每日复盘 · 新手拆解</h3>
+                    <p class="sub-text">把老师发的复盘/文章粘贴进来，我帮你翻译成小白能懂的大白话</p>
                     <div class="notes-input">
-                        <textarea id="noteInput" placeholder="把老师发的看不懂的内容贴这里，我帮你翻译成人话..." rows="4"></textarea>
-                        <button class="btn-primary" id="submitNote">帮我拆解 🧩</button>
+                        <textarea id="noteInput" placeholder="粘贴老师的复盘内容、文章或看不懂的术语，我来帮你拆解..." rows="4"></textarea>
+                        <button class="btn-primary" id="submitNote">🧩 帮我拆解成小白版</button>
                     </div>
                     <div class="notes-list" id="notesList"></div>
                 </div>
                 <!-- 投资知识库 -->
                 <div class="card knowledge-card">
-                    <h3>🧠 投资知识库</h3>
+                    <h3>🧠 投资知识库 <span style="font-size:12px;color:var(--text-light);">（点击展开学习）</span></h3>
                     <div class="knowledge-list" id="knowledgeList">
-                        <div class="knowledge-item">
-                            <span class="k-tag">基础</span>
-                            <span class="k-title">什么是PE（市盈率）？</span>
-                            <span class="k-status learned">已学</span>
+                        <div class="knowledge-item" onclick="App.toggleKnowledge(this)">
+                            <div class="k-head"><span class="k-tag">基础</span><span class="k-title">什么是PE（市盈率）？</span><span class="k-arrow">▸</span></div>
+                            <div class="k-detail">PE = 股价 ÷ 每年每股赚的钱。比如股价20元，每年赚1元，PE就是20倍。PE越低说明"回本越快"，但太低也可能说明公司不被看好。一般同行业比PE才有意义。</div>
                         </div>
-                        <div class="knowledge-item">
-                            <span class="k-tag">基础</span>
-                            <span class="k-title">什么是MACD指标？</span>
-                            <span class="k-status pending">待学</span>
+                        <div class="knowledge-item" onclick="App.toggleKnowledge(this)">
+                            <div class="k-head"><span class="k-tag">基础</span><span class="k-title">什么是MACD指标？</span><span class="k-arrow">▸</span></div>
+                            <div class="k-detail">MACD是用来判断"趋势强弱"的工具。简单说：红柱变长=涨势加强，绿柱变长=跌势加强；白线上穿黄线叫"金叉"是买入信号，下穿叫"死叉"是卖出信号。新手先看趋势，别迷信单一指标。</div>
                         </div>
-                        <div class="knowledge-item">
-                            <span class="k-tag">进阶</span>
-                            <span class="k-title">仓位管理原则</span>
-                            <span class="k-status pending">待学</span>
+                        <div class="knowledge-item" onclick="App.toggleKnowledge(this)">
+                            <div class="k-head"><span class="k-tag">进阶</span><span class="k-title">仓位管理原则</span><span class="k-arrow">▸</span></div>
+                            <div class="k-detail">核心原则：① 别全仓一只（你华钰50%已偏重，建议逐步降到30%以内）；② 单笔买入不超过总资金10%；③ 越跌越买要设上限（分批建仓）；④ 永远留点现金应对突发。</div>
+                        </div>
+                        <div class="knowledge-item" onclick="App.toggleKnowledge(this)">
+                            <div class="k-head"><span class="k-tag">基础</span><span class="k-title">什么是涨停/跌停？</span><span class="k-arrow">▸</span></div>
+                            <div class="k-detail">A股普通股票一天最多涨10%（涨停）或跌10%（跌停），ST股是5%。涨停说明买盘强，但不代表明天还涨；跌停说明抛压大。你持有的华钰矿业属于有色金属，波动较大要留意。</div>
                         </div>
                     </div>
                 </div>
@@ -2091,22 +2181,19 @@ body {
                 <!-- 每日热点 -->
                 <div class="card trends-card">
                     <h3>🔥 今日可学习热点</h3>
-                    <p class="sub-text">抖音/小红书热门内容推荐（每日更新）</p>
+                    <p class="sub-text">点击展开学习要点（灵感来自当下热门内容方向）</p>
                     <div class="trends-list" id="trendsList">
-                        <div class="trend-item">
-                            <span class="trend-tag">🎬 剪辑</span>
-                            <span class="trend-title">【抖音热门】转场技巧合集 - 3秒学会电影级转场</span>
-                            <a href="#" class="trend-link">查看 →</a>
+                        <div class="trend-item" onclick="App.toggleTrend(this)">
+                            <div class="trend-head"><span class="trend-tag">🎬 剪辑</span><span class="trend-title">转场技巧合集 - 3秒学会电影级转场</span><span class="trend-arrow">▸</span></div>
+                            <div class="trend-detail">💡 学习要点：① 用「遮罩转场」做物体遮挡切换；② 节奏卡点让画面随音乐跳动；③ 慢动作+快切混用更有电影感。新手从剪映「一键成片」开始，再学手动转场。</div>
                         </div>
-                        <div class="trend-item">
-                            <span class="trend-tag">🎨 审美</span>
-                            <span class="trend-title">【小红书】苏式庭院拍摄构图指南</span>
-                            <a href="#" class="trend-link">查看 →</a>
+                        <div class="trend-item" onclick="App.toggleTrend(this)">
+                            <div class="trend-head"><span class="trend-tag">🎨 审美</span><span class="trend-title">苏式庭院拍摄构图指南</span><span class="trend-arrow">▸</span></div>
+                            <div class="trend-detail">💡 学习要点：① 对称构图拍门廊/花窗；② 留白+前景虚化营造层次；③ 利用晨光/黄昏的暖调光线。你的小院就适合这种"框景"拍法——用门框、树枝做天然画框。</div>
                         </div>
-                        <div class="trend-item">
-                            <span class="trend-tag">📸 摄影</span>
-                            <span class="trend-title">【B站】自然光人像摄影教程 - 适合小院场景</span>
-                            <a href="#" class="trend-link">查看 →</a>
+                        <div class="trend-item" onclick="App.toggleTrend(this)">
+                            <div class="trend-head"><span class="trend-tag">📸 摄影</span><span class="trend-title">自然光人像摄影教程</span><span class="trend-arrow">▸</span></div>
+                            <div class="trend-detail">💡 学习要点：① 窗户旁柔光最出片，避免正午硬光；② 让人物侧身45°受光更立体；③ 背景干净的墙/绿植比杂乱街道好看。减脂打卡照也可以用这招。</div>
                         </div>
                     </div>
                 </div>
@@ -2114,15 +2201,13 @@ body {
                 <div class="card creative-notes-card">
                     <h3>📚 审美 & 剪辑学习笔记</h3>
                     <div class="creative-notes-list" id="creativeNotesList">
-                        <div class="cnote-item">
-                            <span class="cnote-tag">构图</span>
-                            <span class="cnote-title">三分法 vs 中心构图 - 什么时候用哪个？</span>
-                            <span class="cnote-date">2025-07-28</span>
+                        <div class="cnote-item" onclick="App.toggleCnote(this)">
+                            <div class="cnote-head"><span class="cnote-tag">构图</span><span class="cnote-title">三分法 vs 中心构图</span><span class="cnote-arrow">▸</span></div>
+                            <div class="cnote-detail">三分法：把画面横竖各分三份，主体放交叉点，适合风景/日常。中心构图：主体正中，适合对称建筑（苏式门廊）、特写。简单记：想稳重用中心，想灵动用三分。</div>
                         </div>
-                        <div class="cnote-item">
-                            <span class="cnote-tag">调色</span>
-                            <span class="cnote-title">苏式风格调色参数参考（低饱和+暖调）</span>
-                            <span class="cnote-date">2025-07-27</span>
+                        <div class="cnote-item" onclick="App.toggleCnote(this)">
+                            <div class="cnote-head"><span class="cnote-tag">调色</span><span class="cnote-title">苏式风格调色参考</span><span class="cnote-arrow">▸</span></div>
+                            <div class="cnote-detail">核心：低饱和（降鲜艳度）、暖调（色温+10~15）、加一点青绿模拟园林感。剪映里搜"苏式/江南"滤镜直接套，再微调曝光+0.3、对比-5即可。</div>
                         </div>
                     </div>
                 </div>
@@ -2137,52 +2222,49 @@ body {
                 <!-- 每日资讯 -->
                 <div class="card ai-news-card">
                     <h3>📰 今日AI资讯</h3>
-                    <p class="sub-text">行业动态 + 工具更新（每日更新）</p>
+                    <p class="sub-text">行业动态 + 工具更新（示例内容，可点击展开）</p>
                     <div class="ai-news-list" id="aiNewsList">
-                        <div class="ainews-item">
-                            <span class="ainews-tag">工具</span>
-                            <span class="ainews-title">剪映AI一键成片功能更新 - 支持更多模板风格</span>
-                            <span class="ainews-date">今天</span>
+                        <div class="ainews-item" onclick="App.toggleAnews(this)">
+                            <div class="ainews-head"><span class="ainews-tag">工具</span><span class="ainews-title">剪映AI一键成片功能更新</span><span class="ainews-arrow">▸</span></div>
+                            <div class="ainews-detail">✂️ 现在支持更多模板风格，选「治愈系」「国风」直接套用你的小院素材，1分钟出片。适合不想学复杂剪辑的新手。</div>
                         </div>
-                        <div class="ainews-item">
-                            <span class="ainews-tag">动态</span>
-                            <span class="ainews-title">OpenAI发布GPT-4o新功能 - 多模态能力增强</span>
-                            <span class="ainews-date">今天</span>
+                        <div class="ainews-item" onclick="App.toggleAnews(this)">
+                            <div class="ainews-head"><span class="ainews-tag">动态</span><span class="ainews-title">GPT-4o多模态能力增强</span><span class="ainews-arrow">▸</span></div>
+                            <div class="ainews-detail">🤖 现在能看图说话、实时语音对话。你可以拍照问它"这个构图怎么样"，或语音练口语。免费版豆包/通义也能做类似事。</div>
                         </div>
-                        <div class="ainews-item">
-                            <span class="ainews-tag">教程</span>
-                            <span class="ainews-title">用AI写爆款文案的5个实用技巧</span>
-                            <span class="ainews-date">昨天</span>
+                        <div class="ainews-item" onclick="App.toggleAnews(this)">
+                            <div class="ainews-head"><span class="ainews-tag">教程</span><span class="ainews-title">用AI写爆款文案的5个技巧</span><span class="ainews-arrow">▸</span></div>
+                            <div class="ainews-detail">📝 ① 给角色设定 ② 说清受众 ③ 指定风格 ④ 限制字数 ⑤ 要求带emoji。例："你是小红书运营，给1997年女生写小院减脂日常文案，口语化，带emoji，80字内"。</div>
                         </div>
                     </div>
                 </div>
                 <!-- 工具教程库 -->
                 <div class="card ai-tools-card">
-                    <h3>🛠️ AI工具教程</h3>
+                    <h3>🛠️ AI工具教程 <span style="font-size:12px;color:var(--text-light);">（点击展开）</span></h3>
                     <div class="ai-tools-grid">
-                        <div class="tool-card">
+                        <div class="tool-card" onclick="App.toggleTool(this)">
                             <span class="tool-icon">✍️</span>
                             <span class="tool-name">AI文案写作</span>
                             <p class="tool-desc">用ChatGPT/豆包写运营文案、朋友圈文案</p>
-                            <button class="btn-small btn-secondary">开始学</button>
+                            <div class="tool-detail">📝 入门：打开豆包→输入"帮我写一条小院日常小红书文案，苏式风格"→微调。提示词公式=角色+任务+风格+字数。多试3次挑最好的。</div>
                         </div>
-                        <div class="tool-card">
+                        <div class="tool-card" onclick="App.toggleTool(this)">
                             <span class="tool-icon">🎨</span>
                             <span class="tool-name">AI做图</span>
                             <p class="tool-desc">Midjourney/即梦生成设计素材和灵感图</p>
-                            <button class="btn-small btn-secondary">开始学</button>
+                            <div class="tool-detail">🎨 推荐用「即梦」（国内可直连）：输入"苏式小院，晨光，低饱和暖调，摄影感"就能出图。做头像/封面/壁纸都行。</div>
                         </div>
-                        <div class="tool-card">
+                        <div class="tool-card" onclick="App.toggleTool(this)">
                             <span class="tool-icon">🎬</span>
                             <span class="tool-name">AI剪辑</span>
                             <p class="tool-desc">剪映AI功能全解析：一键成片/智能字幕/配音</p>
-                            <button class="btn-small btn-secondary">开始学</button>
+                            <div class="tool-detail">🎬 剪映→「图文成片」粘贴文字自动生成视频；「智能字幕」自动识别语音；「AI配音」选温柔女声。新手先做图文成片最快出片。</div>
                         </div>
-                        <div class="tool-card">
+                        <div class="tool-card" onclick="App.toggleTool(this)">
                             <span class="tool-icon">📊</span>
                             <span class="tool-name">AI数据分析</span>
                             <p class="tool-desc">用AI分析账号数据、优化运营策略</p>
-                            <button class="btn-small btn-secondary">开始学</button>
+                            <div class="tool-detail">📊 把后台数据截图发给AI→问"哪类内容数据好？下周发什么？"→它能帮你总结规律。不用懂Excel也能做基础分析。</div>
                         </div>
                     </div>
                 </div>
@@ -2596,6 +2678,21 @@ const DataManager = {
         return this.get('expenses', []);
     },
 
+    // 存钱记录
+    getSavings() { return this.get('savings', []); },
+    addSaving(amount) {
+        const savings = this.getSavings();
+        savings.push({ amount: parseFloat(amount) || 0, date: Utils.today(), createdAt: new Date().toISOString() });
+        this.set('savings', savings);
+        return savings;
+    },
+    getMonthSavings(year, month) {
+        return this.getSavings().filter(s => {
+            const d = new Date(s.createdAt);
+            return d.getFullYear() === year && (d.getMonth() + 1) === month;
+        });
+    },
+
     addExpense(expense) {
         const expenses = this.getExpenses();
         expense.id = Utils.generateId();
@@ -2862,24 +2959,8 @@ const DataManager = {
         // 如果已有数据则不覆盖
         if (this.getExpenses().length > 0) return;
 
-        // 示例支出数据
-        const sampleExpenses = [
-            { description: '午餐外卖 - 黄焖鸡米饭', amount: 28, category: '餐饮', date: Utils.today() },
-            { description: '打车去公司', amount: 15, category: '交通', date: Utils.today() },
-            { description: '减脂餐晚餐', category: '餐饮', date: Utils.today(), amount: 18 },
-        ];
-        sampleExpenses.forEach(e => this.addExpense(e));
-
-        // 示例体重数据（模拟过去一周）
-        const baseWeight = 115;
-        for (let i = 6; i >= 0; i--) {
-            const d = new Date();
-            d.setDate(d.getDate() - i);
-            const variation = (Math.random() - 0.5) * 2; // ±1斤波动
-            this.addWeightRecord((baseWeight + variation).toFixed(1));
-        }
-
-        console.log('✅ 示例数据初始化完成');
+        // 不预置任何假数据，所有数据由用户真实记录
+        console.log('✅ 初始化完成（无预置数据）');
     },
 
     /**
@@ -2909,6 +2990,9 @@ const AccountingModule = {
     bindEvents() {
         // 提交支出
         document.getElementById('submitExpense').addEventListener('click', () => this.submitExpense());
+        // 提交存钱
+        const saveBtn = document.getElementById('submitSave');
+        if (saveBtn) saveBtn.addEventListener('click', () => this.submitSave());
 
         // 快捷分类按钮
         document.querySelectorAll('.cat-btn').forEach(btn => {
@@ -2943,18 +3027,24 @@ const AccountingModule = {
             return;
         }
 
-        const amount = Utils.extractAmount(text);
-        const category = Utils.categorizeExpense(text);
-
-        DataManager.addExpense({
-            description: text,
-            amount: amount || 0, // 如果没提取到金额，用户下次可以补充
-            category: category
+        // 支持多笔：按换行/分号/句号/逗号分割
+        const parts = text.split(/[\n;；。，,]+/).map(s => s.trim()).filter(Boolean);
+        let count = 0;
+        parts.forEach(p => {
+            const amount = Utils.extractAmount(p);
+            const category = Utils.categorizeExpense(p);
+            DataManager.addExpense({
+                description: p,
+                amount: amount || 0,
+                category: category,
+                date: Utils.today()
+            });
+            count++;
         });
 
         input.value = '';
         document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
-        Utils.showToast('已记录 ✅');
+        Utils.showToast(`已记录 ${count} 笔 ✅`);
         this.render();
     },
 
@@ -2963,6 +3053,44 @@ const AccountingModule = {
         this.renderExpenseList();
         this.renderChart();
         this.renderWeeklySummary();
+        this.renderSavings();
+    },
+
+    submitSave() {
+        const input = document.getElementById('saveInput');
+        const amount = parseFloat(input.value);
+        if (!amount || amount <= 0) {
+            Utils.showToast('请输入有效的存钱金额~');
+            return;
+        }
+        DataManager.addSaving(amount);
+        input.value = '';
+        Utils.showToast(`已存 ${amount} 元 💰`);
+        this.renderSavings();
+        // 同步更新顶部进度
+        this.renderProgress();
+    },
+
+    renderSavings() {
+        const savings = DataManager.getSavings();
+        const total = savings.reduce((sum, s) => sum + (s.amount || 0), 0);
+        const totalEl = document.getElementById('savingsTotal');
+        const historyEl = document.getElementById('savingsHistory');
+        if (totalEl) {
+            totalEl.innerHTML = `💰 累计已存：<strong style="color:var(--secondary)">¥${total.toFixed(0)}</strong>`;
+        }
+        if (historyEl) {
+            if (savings.length === 0) {
+                historyEl.innerHTML = '<p class="text-light" style="font-size:12px;padding:8px 0;">还没有存钱记录，开始你的第一笔吧~</p>';
+            } else {
+                historyEl.innerHTML = savings.slice(-8).reverse().map(s =>
+                    `<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border-color);">
+                        <span>💰 ¥${s.amount}</span>
+                        <span style="color:var(--text-light);">${s.date}</span>
+                    </div>`
+                ).join('');
+            }
+        }
     },
 
     renderProgress() {
@@ -3218,14 +3346,43 @@ const InvestmentModule = {
             return;
         }
 
-        DataManager.addNote({
-            rawContent: content,
-            translation: '等待AI翻译拆解...',
-            status: 'pending'
-        });
+        // 离线拆解：提取关键术语并给出小白解释（后续可接入真实AI）
+        const explainMap = {
+            'PE': '市盈率=股价÷每年每股利润，越低回本越快',
+            '市盈率': '股价÷每年每股利润，越低回本越快',
+            'MACD': '趋势指标，金叉买入信号/死叉卖出信号',
+            '金叉': '短期线向上穿过长期线，常看作买入信号',
+            '死叉': '短期线向下穿过长期线，常看作卖出信号',
+            '仓位': '你拿多少比例的钱买了这只股票',
+            '建仓': '第一次买入某只股票',
+            '加仓': '已经买了，再买更多',
+            '减仓': '卖掉一部分，降低持有比例',
+            '止损': '亏到某个数就卖掉，防止亏更多',
+            '止盈': '赚到某个数就卖掉，落袋为安',
+            '主力': '资金量大、能影响股价的机构或大户',
+            '散户': '像我们这样资金量小的个人投资者',
+            '北向资金': '从香港通过沪深港通买A股的外资',
+            '量能': '成交量，越大说明买卖越活跃',
+            '震荡': '股价上上下下但没明确方向',
+            '突破': '股价涨过前期高点或关键位置',
+        };
+        let found = [];
+        for (const [k,v] of Object.entries(explainMap)) {
+            if (content.includes(k)) found.push({k,v});
+        }
+        let explainHtml = found.length > 0
+            ? found.map(f => `<div style="margin:6px 0;padding:8px;background:rgba(56,211,159,0.08);border-radius:8px;font-size:13px;"><strong>${f.k}：</strong>${f.v}</div>`).join('')
+            : '<div style="font-size:13px;color:var(--text-light);">未识别到常见术语，建议你把具体不懂的句子发给我，我帮你逐句翻译~</div>';
 
+        const note = {
+            rawContent: content,
+            translation: explainHtml,
+            status: 'done',
+            createdAt: new Date().toISOString()
+        };
+        DataManager.addNote(note);
         input.value = '';
-        Utils.showToast('已保存，下次对话时我会帮你拆解翻译 🧩');
+        Utils.showToast('已拆解 ✅ 下滑查看小白版解释');
         this.renderNotes();
     },
 
@@ -3241,12 +3398,9 @@ const InvestmentModule = {
         list.innerHTML = notes.slice(0, 10).map(n => `
             <div class="note-item">
                 <div style="flex:1;">
-                    <div style="font-size:13px;font-weight:500;margin-bottom:4px;">
-                        ${n.translation !== '等待AI翻译拆解...' ? '📝 已拆解' : '⏳ 待拆解'}
-                    </div>
-                    <div style="font-size:12px;color:var(--text-light);max-height:40px;overflow:hidden;">
-                        ${n.rawContent.substring(0, 60)}...
-                    </div>
+                    <div style="font-size:13px;font-weight:600;margin-bottom:4px;color:var(--primary);">📝 小白版拆解</div>
+                    <div style="font-size:12px;color:var(--text-secondary);margin-bottom:6px;">原文：${n.rawContent.substring(0, 40)}${n.rawContent.length>40?'...':''}</div>
+                    <div class="note-translation">${n.translation}</div>
                 </div>
                 <span style="font-size:11px;color:var(--text-light);white-space:nowrap;">${n.createdAt ? n.createdAt.slice(5, 16) : ''}</span>
             </div>
@@ -3292,28 +3446,21 @@ const InvestmentModule = {
 
     renderKnowledge() {
         const knowledgeItems = [
-            { id: 'pe', tag: '基础', title: '什么是PE（市盈率）？', desc: '股价÷每股收益，越低可能越便宜' },
-            { id: 'macd', tag: '基础', title: '什么是MACD指标？', desc: '趋势跟踪指标，金叉买死叉卖' },
-            { id: 'position', tag: '进阶', title: '仓位管理原则', desc: '不要把鸡蛋放一个篮子里' },
-            { id: 'stoploss', tag: '进阶', title: '止损的重要性', desc: '亏8%就跑，保护本金第一' },
-            { id: 'kline', tag: '基础', title: 'K线图怎么看？', desc: '红涨绿跌，实体越长趋势越强' },
-            { id: 'volume', tag: '基础', title: '成交量的意义', desc: '量价配合才是真趋势' },
+            { id: 'pe', tag: '基础', title: '什么是PE（市盈率）？', detail: 'PE = 股价 ÷ 每年每股赚的钱。比如股价20元，每年赚1元，PE就是20倍。PE越低说明"回本越快"，但太低也可能说明公司不被看好。一般同行业比PE才有意义。' },
+            { id: 'macd', tag: '基础', title: '什么是MACD指标？', detail: 'MACD是用来判断"趋势强弱"的工具。简单说：红柱变长=涨势加强，绿柱变长=跌势加强；白线上穿黄线叫"金叉"是买入信号，下穿叫"死叉"是卖出信号。新手先看趋势，别迷信单一指标。' },
+            { id: 'position', tag: '进阶', title: '仓位管理原则', detail: '核心原则：① 别全仓一只（你华钰50%已偏重，建议逐步降到30%以内）；② 单笔买入不超过总资金10%；③ 越跌越买要设上限（分批建仓）；④ 永远留点现金应对突发。' },
+            { id: 'stoploss', tag: '进阶', title: '止损的重要性', detail: '止损=亏到某个数就卖掉，防止亏更多。比如设定"跌8%就跑"，能保住大部分本金。新手最容易犯的错是"亏了就死扛"，结果越套越深。' },
+            { id: 'kline', tag: '基础', title: 'K线图怎么看？', detail: 'A股红涨绿跌（国际相反）。实体越长说明当天涨跌幅度越大；上影线长=冲高回落；下影线长=探底回升。连续红柱+放量=强势，连续绿柱+放量=弱势。' },
+            { id: 'limit', tag: '基础', title: '什么是涨停/跌停？', detail: 'A股普通股票一天最多涨10%（涨停）或跌10%（跌停），ST股是5%。涨停说明买盘强但未必明天还涨；跌停说明抛压大。华钰矿业属有色金属，波动较大要留意。' },
         ];
 
-        const progress = DataManager.getKnowledgeProgress();
         const list = document.getElementById('knowledgeList');
-
-        list.innerHTML = knowledgeItems.map(k => {
-            const p = progress[k.id];
-            const isLearned = p && p.status === 'learned';
-            return `
-                <div class="knowledge-item">
-                    <span class="k-tag">${k.tag}</span>
-                    <span class="k-title">${k.title}</span>
-                    <span class="k-status ${isLearned ? 'learned' : 'pending'}">${isLearned ? '已学' : '待学'}</span>
-                </div>
-            `;
-        }).join('');
+        list.innerHTML = knowledgeItems.map(k => `
+            <div class="knowledge-item" onclick="App.toggleKnowledge(this)">
+                <div class="k-head"><span class="k-tag">${k.tag}</span><span class="k-title">${k.title}</span><span class="k-arrow">▸</span></div>
+                <div class="k-detail">${k.detail}</div>
+            </div>
+        `).join('');
     }
 };
 
@@ -3686,6 +3833,7 @@ const ExpressionModule = {
         // Lv.1 三句话讲清一件事
         {
             level: 1,
+            id: 'daily',
             title: '三句话讲清一件事',
             desc: '用三句话（不超过60字）描述今天发生的最有意思的一件事。要求：有细节、有感受。',
             type: '基础表达',
@@ -3693,6 +3841,7 @@ const ExpressionModule = {
         },
         {
             level: 1,
+            id: 'recap',
             title: '复述一个观点',
             desc: '你最近听到的一个观点（可以是老师说的、同事说的、网上看到的），用自己的话复述出来。',
             type: '基础表达',
@@ -3700,6 +3849,7 @@ const ExpressionModule = {
         },
         {
             level: 1,
+            id: 'scene',
             title: '描述一个场景',
             desc: '用三句话描述你现在所在的房间或一个熟悉的场景，让没来过的人也能想象出画面。',
             type: '基础表达',
@@ -3708,6 +3858,7 @@ const ExpressionModule = {
         // Lv.2 观点+理由+例子
         {
             level: 2,
+            id: 'structure',
             title: '观点 + 理由 + 例子',
             desc: '针对一个话题，先说观点，再给理由，最后举一个例子支撑。结构要清晰。',
             type: '结构化表达',
@@ -3715,6 +3866,7 @@ const ExpressionModule = {
         },
         {
             level: 2,
+            id: 'explain',
             title: '解释一个概念',
             desc: '把你学到的任何一个投资概念或工作知识，用"它是什么→为什么重要→举个例子"的方式解释清楚。',
             type: '结构化表达',
@@ -3722,6 +3874,7 @@ const ExpressionModule = {
         },
         {
             level: 2,
+            id: 'recommend',
             title: '推荐一样东西',
             desc: '推荐一部电影/一本书/一家店/一个APP，用"是什么→好在哪→适合谁"的结构来说服别人。',
             type: '结构化表达',
@@ -3730,6 +3883,7 @@ const ExpressionModule = {
         // Lv.3 场景模拟
         {
             level: 3,
+            id: 'report',
             title: '跟老板汇报设计反馈',
             desc: '模拟场景：你需要跟老板汇报关于logo设计/品牌设计的客户反馈。要求：清晰、专业、有重点。',
             type: '场景模拟',
@@ -3737,6 +3891,7 @@ const ExpressionModule = {
         },
         {
             level: 3,
+            id: 'meeting',
             title: '开会发言准备',
             desc: '模拟：部门会议上需要你对一个运营方案发表意见。你会怎么说？',
             type: '场景模拟',
@@ -3745,6 +3900,7 @@ const ExpressionModule = {
         // Lv.4 即兴表达
         {
             level: 4,
+            id: 'improv',
             title: '即兴讲故事',
             desc: '随机给你三个词（比如：雨天、猫咪、快递），用它们编一个30秒的小故事。',
             type: '即兴表达',
@@ -3775,6 +3931,7 @@ const ExpressionModule = {
         const today = new Date().getDate();
         const questionIndex = today % levelQuestions.length;
         this.currentQuestion = levelQuestions[questionIndex];
+        this.currentQuestionId = levelQuestions[questionIndex].id || 'default';
 
         // 渲染
         document.getElementById('practiceTitle').textContent = this.currentQuestion.title;
@@ -3841,15 +3998,31 @@ const ExpressionModule = {
         return feedback.join('\n\n');
     },
 
+    // 优秀参考示例库（按题目ID匹配，给新手对照学习）
+    getReferenceExample(questionId) {
+        const examples = {
+            'daily': '【优秀参考】今天最开心的事是下班路上看到两只猫在打架，旁边的奶奶笑得直不起腰。我用手机拍了一段，发现生活里这些小瞬间比刷短视频有意思多了。以后要多留意身边，而不是只盯着屏幕。',
+            'work': '【优秀参考】本周工作最大的收获是学会了用"结论先行"汇报。周二那次我把结果放最前面，领导一下就懂了，没再追问。这说明：别人没耐心听过程，先给答案再补细节，效率高很多。',
+            'emotion': '【优秀参考】今天有点焦虑，因为存钱进度慢了。但我转念一想：婚礼还有半年，每月哪怕只存500也攒得下来。焦虑往往来自"想一步到位"，其实慢慢来反而更稳。',
+            'default': '【优秀参考】用"观点+理由+例子"结构：先说你的看法，再讲为什么，最后举个具体的例子。比如"我觉得减脂餐不难坚持（观点），因为我发现换着花样做就不会腻（理由），昨天用荞麦面代替米饭，吃完很有满足感（例子）。"'
+        };
+        return examples[questionId] || examples['default'];
+    },
+
     showFeedback(answer) {
         const el = document.getElementById('practiceFeedback');
         const feedback = this.generateFeedback(answer);
+        const ref = this.getReferenceExample(this.currentQuestionId);
 
         el.innerHTML = `
             <h4 style="color:var(--primary);margin-bottom:8px;">📝 AI反馈</h4>
-            <div style="white-space:pre-line;">${feedback}</div>
+            <div style="white-space:pre-line;font-size:13px;line-height:1.7;">${feedback}</div>
+            <div style="margin-top:12px;padding:12px;background:rgba(56,211,159,0.08);border-radius:8px;border-left:3px solid var(--secondary);">
+                <div style="font-size:13px;font-weight:600;color:var(--secondary);margin-bottom:6px;">🌟 优秀参考（对照学习）</div>
+                <div style="font-size:13px;line-height:1.7;color:var(--text-secondary);">${ref}</div>
+            </div>
             <p style="margin-top:12px;font-size:12px;color:var(--text-light);">
-                💬 提示：下次对话时可以让我帮你进一步优化这段表达
+                💬 提示：参考示例不是让你抄，而是看"好表达长什么样"，下次试试套用这个结构
             </p>
         `;
         el.classList.remove('hidden');
@@ -3991,7 +4164,7 @@ const CreativeModule = {
 
         const list = document.getElementById('trendsList');
         list.innerHTML = trends.map(t => `
-            <div class="trend-item">
+            <div class="trend-item" onclick="App.toggleTrend(this)">
                 <span class="trend-tag">${t.tag}</span>
                 <span class="trend-title">${t.title}</span>
                 <a href="${t.link}" class="trend-link" onclick="event.preventDefault();Utils.showToast('上线后可跳转到原内容')">查看 →</a>
@@ -4011,7 +4184,7 @@ const CreativeModule = {
 
         const list = document.getElementById('creativeNotesList');
         list.innerHTML = notes.map(n => `
-            <div class="cnote-item">
+            <div class="cnote-item" onclick="App.toggleCnote(this)">
                 <span class="cnote-tag">${n.tag}</span>
                 <span class="cnote-title">${n.title}</span>
                 <span class="cnote-date">${n.date}</span>
@@ -4052,7 +4225,7 @@ const AiLearningModule = {
 
         const list = document.getElementById('aiNewsList');
         list.innerHTML = news.map(n => `
-            <div class="ainews-item">
+            <div class="ainews-item" onclick="App.toggleAnews(this)">
                 <span class="ainews-tag">${n.tag}</span>
                 <span class="ainews-title">${n.title}</span>
                 <span class="ainews-date">${n.date}</span>
@@ -4436,14 +4609,19 @@ const App = {
             if (items.length === 0) throw new Error('空数据');
 
             listEl.innerHTML = items.slice(0, 6).map((item, i) => {
-                const tagClass = i === 0 ? 'news-tag-hot' : (i < 3 ? 'news-tag-focus' : 'news-tag-focus');
+                const tagClass = i === 0 ? 'news-tag-hot' : 'news-tag-focus';
                 const tagText = i === 0 ? '热门' : '关注';
-                return `<div class="news-item">
+                const summary = item.summary || item.intro || item.digest || '点击查看详情';
+                return `<div class="news-item" onclick="App.toggleNews(this)">
                     <span class="news-tag ${tagClass}">${tagText}</span>
                     <div class="news-title-text">${this._escHtml(item.title || '无标题')}</div>
-                    <div class="news-source">来源：新浪财经</div>
+                    <div class="news-source">来源：新浪财经 · ${this._escHtml(item.time || '')}</div>
+                    <div class="news-detail">${this._escHtml(summary)}</div>
+                    <div class="news-expand-hint">👆 点击展开/收起</div>
                 </div>`;
             }).join('');
+            // 绑定点击事件
+
         } catch (err) {
             console.warn('新闻加载失败:', err);
             // 兜底：显示静态预设新闻
@@ -4453,7 +4631,7 @@ const App = {
                 { t: '新能源车价格战再起', s: '36氪', c: 'hot', desc: '多个品牌宣布新一轮降价，有购车需求的家庭可以关注。' },
                 { t: '基金定投策略分享', s: '理财社区', c: 'focus', desc: '市场震荡期适合坚持定投，拉低成本等待反弹。' },
                 { t: '健康生活小贴士', s: '健康报', c: 'focus', desc: '减脂期间注意蛋白质摄入，配合适量运动效果更佳。' }
-            ].map(n => `<div class="news-item">
+            ].map(n => `<div class="news-item" onclick="App.toggleNews(this)">
                 <span class="news-tag news-tag-${n.c}">${n.c==='hot'?'热门':n.c==='important'?'重要':'关注'}</span>
                 <div class="news-title-text">${n.t}</div>
                 <div class="news-source">来源：${n.s}</div>
@@ -4462,6 +4640,12 @@ const App = {
         }
     },
     _escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; },
+    toggleNews(el) { el.classList.toggle('expanded'); },
+    toggleKnowledge(el) { el.classList.toggle('expanded'); },
+    toggleTrend(el) { el.classList.toggle('expanded'); },
+    toggleCnote(el) { el.classList.toggle('expanded'); },
+    toggleTool(el) { el.classList.toggle('expanded'); },
+    toggleAnews(el) { el.classList.toggle('expanded'); },
 
     /* ============================================
        📈 真实股票行情（腾讯财经免费API - 更稳定）
