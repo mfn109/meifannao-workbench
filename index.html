@@ -4464,34 +4464,35 @@ const App = {
     _escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; },
 
     /* ============================================
-       📈 真实股票行情（新浪免费API）
+       📈 真实股票行情（腾讯财经免费API - 更稳定）
        ============================================ */
     async fetchRealStockData() {
         const holdings = DataManager.getHoldings();
         const codes = holdings.stocks.map(s => {
-            // 新浪API格式：sh+上海 / sz+深圳
+            // 腾讯API格式：sh+上海 / sz+深圳
             const prefix = s.code.startsWith('6') ? 'sh' : 'sz';
             return prefix + s.code;
         });
 
         try {
-            const url = 'https://hq.sinajs.cn/list=' + codes.join(',');
+            const url = 'https://qt.gtimg.cn/q=' + codes.join(',');
             const resp = await fetch(url, { cache: 'no-cache' });
             const text = await resp.text();
 
-            // 解析新浪返回格式: var hq_str_sh601020="华钰矿业,18.50,...";
+            // 解析腾讯返回格式: v_sh601020="华钰矿业,18.50,19.20,...";
             const result = {};
             text.split(';').forEach(line => {
-                const m = line.match(/var hq_str_(\w+)="(.*)"/);
+                const m = line.match(/v_(\w+)="(.*)"/);
                 if (m && m[2]) {
-                    const fields = m[2].split(',');
+                    const f = m[2].split('~');
+                    // 腾讯格式: [1]=名称 [3]=当前价 [4]=昨收 [5]=今开 [6]=最高 [7]=最低
                     result[m[1]] = {
-                        name: fields[0],     // 股票名
-                        open: parseFloat(fields[1]),   // 今开
-                        prevClose: parseFloat(fields[2]), // 昨收
-                        price: parseFloat(fields[3]),   // 当前价
-                        high: parseFloat(fields[4]),   // 最高
-                        low: parseFloat(fields[5]),    // 最低
+                        name: f[1],
+                        price: parseFloat(f[3]) || 0,
+                        prevClose: parseFloat(f[4]) || 0,
+                        open: parseFloat(f[5]) || 0,
+                        high: parseFloat(f[6]) || 0,
+                        low: parseFloat(f[7]) || 0,
                     };
                 }
             });
@@ -4501,7 +4502,7 @@ const App = {
                 const prefix = s.code.startsWith('6') ? 'sh' : 'sz';
                 const key = prefix + s.code;
                 const real = result[key];
-                if (real && real.price > 0) {
+                if (real && real.price > 0 && real.prevClose > 0) {
                     s.realPrice = real.price;
                     s.changePct = ((real.price - real.prevClose) / real.prevClose * 100);
                     s.profitPct = ((real.price - s.buyPrice) / s.buyPrice * 100);
@@ -4513,7 +4514,34 @@ const App = {
             return holdings.stocks;
         } catch (e) {
             console.warn('获取真实行情失败:', e);
-            return null;
+            // 尝试新浪备用接口
+            try {
+                const sinaCodes = holdings.stocks.map(s => (s.code.startsWith('6') ? 'sh' : 'sz') + s.code);
+                const resp2 = await fetch('https://hq.sinajs.cn/list=' + sinaCodes.join(','), { cache: 'no-cache' });
+                const text2 = await resp2.text();
+                const result2 = {};
+                text2.split(';').forEach(line => {
+                    const m = line.match(/var hq_str_(\w+)="(.*)"/);
+                    if (m && m[2]) {
+                        const fields = m[2].split(',');
+                        result2[m[1]] = { name: fields[0], price: parseFloat(fields[3]), prevClose: parseFloat(fields[2]) };
+                    }
+                });
+                holdings.stocks.forEach(s => {
+                    const key = (s.code.startsWith('6') ? 'sh' : 'sz') + s.code;
+                    const real = result2[key];
+                    if (real && real.price > 0 && real.prevClose > 0) {
+                        s.realPrice = real.price;
+                        s.changePct = ((real.price - real.prevClose) / real.prevClose * 100);
+                        s.profitPct = ((real.price - s.buyPrice) / s.buyPrice * 100);
+                    }
+                });
+                localStorage.setItem('mfn_realtime_stocks', JSON.stringify(holdings.stocks));
+                return holdings.stocks;
+            } catch (e2) {
+                console.warn('备用接口也失败:', e2);
+                return null;
+            }
         }
     },
 };
