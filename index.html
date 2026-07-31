@@ -3444,21 +3444,14 @@ const InvestmentModule = {
         btn.textContent = '获取中...';
         btn.disabled = true;
         try {
-            // 拉取真实行情（含持仓 + 上证指数）
+            // 拉取真实行情（含持仓 + 上证指数），JSONP方式最稳
             const holdings = DataManager.getHoldings();
             const codes = holdings.stocks.map(s => (s.code.startsWith('6') ? 'sh' : 'sz') + s.code);
             codes.push('sh000001'); // 上证指数
             const realMap = {};
             try {
-                const resp = await fetch('https://qt.gtimg.cn/q=' + codes.join(','), { cache: 'no-cache' });
-                const text = await resp.text();
-                text.split(';').forEach(line => {
-                    const m = line.match(/v_(\w+)="(.*)"/);
-                    if (m && m[2]) {
-                        const f = m[2].split('~');
-                        realMap[m[1]] = { name: f[1], price: parseFloat(f[3]) || 0, prevClose: parseFloat(f[4]) || 0, open: parseFloat(f[5]) || 0 };
-                    }
-                });
+                const q = await this._fetchQuotes(codes);
+                Object.assign(realMap, q);
             } catch (e) { console.warn('复盘行情拉取失败', e); }
 
             const now = new Date();
@@ -4715,83 +4708,80 @@ const App = {
     /* ============================================
        📈 真实股票行情（腾讯财经免费API - 更稳定）
        ============================================ */
+    // 真实行情拉取：JSONP(script注入)为主，完全绕过CORS，最稳；fetch为兜底
+    _fetchQuotes(codes) {
+        return new Promise((resolve) => {
+            let done = false;
+            const result = {};
+            const finish = () => {
+                if (done) return;
+                done = true;
+                clearTimeout(timer);
+                codes.forEach(code => {
+                    try {
+                        const raw = window['v_' + code];
+                        if (raw && typeof raw === 'string') {
+                            const f = raw.split('~');
+                            result[code] = {
+                                name: f[1] || '',
+                                price: parseFloat(f[3]) || 0,
+                                prevClose: parseFloat(f[4]) || 0,
+                                open: parseFloat(f[5]) || 0,
+                                high: parseFloat(f[6]) || 0,
+                                low: parseFloat(f[7]) || 0,
+                            };
+                        }
+                    } catch (e) {}
+                });
+                resolve(result);
+            };
+            const timer = setTimeout(finish, 10000); // 超时兜底，避免一直等待
+            const sc = document.createElement('script');
+            sc.onload = () => setTimeout(finish, 80); // 等全局变量赋值完成
+            sc.onerror = () => finish();
+            sc.src = 'https://qt.gtimg.cn/q=' + codes.join(',');
+            (document.head || document.body).appendChild(sc);
+        });
+    },
+
     async fetchRealStockData() {
         const holdings = DataManager.getHoldings();
-        const codes = holdings.stocks.map(s => {
-            // 腾讯API格式：sh+上海 / sz+深圳
-            const prefix = s.code.startsWith('6') ? 'sh' : 'sz';
-            return prefix + s.code;
+        const codes = holdings.stocks.map(s => (s.code.startsWith('6') ? 'sh' : 'sz') + s.code);
+        let result = {};
+        try {
+            result = await this._fetchQuotes(codes);
+        } catch (e) {
+            console.warn('行情获取失败:', e);
+        }
+
+        // 兜底：JSONP失败时尝试fetch
+        if (Object.keys(result).length === 0) {
+            try {
+                const resp = await fetch('https://qt.gtimg.cn/q=' + codes.join(','), { cache: 'no-cache' });
+                const text = await resp.text();
+                text.split(';').forEach(line => {
+                    const m = line.match(/v_(\w+)="(.*)"/);
+                    if (m && m[2]) {
+                        const f = m[2].split('~');
+                        result[m[1]] = { name: f[1], price: parseFloat(f[3]) || 0, prevClose: parseFloat(f[4]) || 0 };
+                    }
+                });
+            } catch (e2) { console.warn('fetch兜底也失败:', e2); }
+        }
+
+        // 更新持仓显示
+        holdings.stocks.forEach(s => {
+            const key = (s.code.startsWith('6') ? 'sh' : 'sz') + s.code;
+            const real = result[key];
+            if (real && real.price > 0 && real.prevClose > 0) {
+                s.realPrice = real.price;
+                s.changePct = ((real.price - real.prevClose) / real.prevClose * 100);
+                s.profitPct = ((real.price - s.buyPrice) / s.buyPrice * 100);
+            }
         });
 
-        try {
-            const url = 'https://qt.gtimg.cn/q=' + codes.join(',');
-            const resp = await fetch(url, { cache: 'no-cache' });
-            const text = await resp.text();
-
-            // 解析腾讯返回格式: v_sh601020="华钰矿业,18.50,19.20,...";
-            const result = {};
-            text.split(';').forEach(line => {
-                const m = line.match(/v_(\w+)="(.*)"/);
-                if (m && m[2]) {
-                    const f = m[2].split('~');
-                    // 腾讯格式: [1]=名称 [3]=当前价 [4]=昨收 [5]=今开 [6]=最高 [7]=最低
-                    result[m[1]] = {
-                        name: f[1],
-                        price: parseFloat(f[3]) || 0,
-                        prevClose: parseFloat(f[4]) || 0,
-                        open: parseFloat(f[5]) || 0,
-                        high: parseFloat(f[6]) || 0,
-                        low: parseFloat(f[7]) || 0,
-                    };
-                }
-            });
-
-            // 更新持仓显示
-            holdings.stocks.forEach(s => {
-                const prefix = s.code.startsWith('6') ? 'sh' : 'sz';
-                const key = prefix + s.code;
-                const real = result[key];
-                if (real && real.price > 0 && real.prevClose > 0) {
-                    s.realPrice = real.price;
-                    s.changePct = ((real.price - real.prevClose) / real.prevClose * 100);
-                    s.profitPct = ((real.price - s.buyPrice) / s.buyPrice * 100);
-                }
-            });
-
-            // 存入localStorage供渲染用
-            localStorage.setItem('mfn_realtime_stocks', JSON.stringify(holdings.stocks));
-            return holdings.stocks;
-        } catch (e) {
-            console.warn('获取真实行情失败:', e);
-            // 尝试新浪备用接口
-            try {
-                const sinaCodes = holdings.stocks.map(s => (s.code.startsWith('6') ? 'sh' : 'sz') + s.code);
-                const resp2 = await fetch('https://hq.sinajs.cn/list=' + sinaCodes.join(','), { cache: 'no-cache' });
-                const text2 = await resp2.text();
-                const result2 = {};
-                text2.split(';').forEach(line => {
-                    const m = line.match(/var hq_str_(\w+)="(.*)"/);
-                    if (m && m[2]) {
-                        const fields = m[2].split(',');
-                        result2[m[1]] = { name: fields[0], price: parseFloat(fields[3]), prevClose: parseFloat(fields[2]) };
-                    }
-                });
-                holdings.stocks.forEach(s => {
-                    const key = (s.code.startsWith('6') ? 'sh' : 'sz') + s.code;
-                    const real = result2[key];
-                    if (real && real.price > 0 && real.prevClose > 0) {
-                        s.realPrice = real.price;
-                        s.changePct = ((real.price - real.prevClose) / real.prevClose * 100);
-                        s.profitPct = ((real.price - s.buyPrice) / s.buyPrice * 100);
-                    }
-                });
-                localStorage.setItem('mfn_realtime_stocks', JSON.stringify(holdings.stocks));
-                return holdings.stocks;
-            } catch (e2) {
-                console.warn('备用接口也失败:', e2);
-                return null;
-            }
-        }
+        localStorage.setItem('mfn_realtime_stocks', JSON.stringify(holdings.stocks));
+        return holdings.stocks;
     },
 };
 
