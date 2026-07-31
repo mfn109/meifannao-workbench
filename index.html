@@ -1938,7 +1938,7 @@ body {
                 </div>
                 <!-- 我的持仓 -->
                 <div class="card holdings-card">
-                    <h3>我的持仓</h3>
+                    <h3>我的持仓 <span id="stockTime" style="font-size:11px;font-weight:400;color:var(--text-light);">⏳ 加载实时行情…</span></h3>
                     <div class="holdings-tabs">
                         <button class="tab-btn active" data-tab="stocks">股票 (9)</button>
                         <button class="tab-btn" data-tab="funds">基金 (3)</button>
@@ -1950,8 +1950,8 @@ body {
                 <div class="card review-card">
                     <h3>📝 每日复盘 & 行情刷新</h3>
                     <div class="review-placeholder">
-                        <p>📡 点击下方按钮，实时拉取你持仓的最新价格和涨跌</p>
-                        <button class="btn-secondary" id="triggerReview">🔄 刷新实时行情</button>
+                        <p>📡 行情已自动刷新（每30秒）。也可点下方按钮立即刷新持仓最新价格和涨跌</p>
+                        <button class="btn-secondary" id="triggerReview">🔄 立即刷新行情</button>
                     </div>
                     <div class="review-content hidden" id="reviewContent"></div>
                 </div>
@@ -3272,6 +3272,38 @@ const InvestmentModule = {
         this.renderHoldings();
         this.renderNotes();
         this.renderKnowledge();
+        this.refreshStocks(); // 进模块自动拉实时行情
+    },
+
+    // 自动拉取实时行情（带时间戳 + 失败提示）
+    async refreshStocks() {
+        const tEl = document.getElementById('stockTime');
+        try {
+            const data = await this.fetchRealStockData();
+            this.renderHoldings();
+            if (tEl) {
+                const now = new Date();
+                const hh = String(now.getHours()).padStart(2,'0');
+                const mm = String(now.getMinutes()).padStart(2,'0');
+                const ss = String(now.getSeconds()).padStart(2,'0');
+                tEl.textContent = '✅ 实时 ' + hh + ':' + mm + ':' + ss;
+                tEl.style.color = 'var(--secondary)';
+            }
+            // 每30秒自动刷新（只在投资模块存活期间）
+            if (this._timer) clearInterval(this._timer);
+            this._timer = setInterval(async () => {
+                if (document.getElementById('investmentModule') && !document.getElementById('investmentModule').classList.contains('hidden')) {
+                    const d = await this.fetchRealStockData();
+                    this.renderHoldings();
+                    if (tEl) {
+                        const n2 = new Date();
+                        tEl.textContent = '✅ 实时 ' + String(n2.getHours()).padStart(2,'0') + ':' + String(n2.getMinutes()).padStart(2,'0') + ':' + String(n2.getSeconds()).padStart(2,'0');
+                    }
+                } else { clearInterval(this._timer); this._timer = null; }
+            }, 30000);
+        } catch (e) {
+            if (tEl) { tEl.textContent = '⚠️ 行情获取失败，点下方刷新重试'; tEl.style.color = '#e74c3c'; }
+        }
     },
 
     bindEvents() {
@@ -3290,8 +3322,8 @@ const InvestmentModule = {
         // 提交学习笔记
         document.getElementById('submitNote').addEventListener('click', () => this.submitNote());
 
-        // 手动触发复盘
-        document.getElementById('triggerReview').addEventListener('click', () => this.triggerReview());
+        // 手动刷新实时行情（真实拉取）
+        document.getElementById('triggerReview').addEventListener('click', () => this.refreshStocks());
     },
 
     renderHoldings() {
@@ -3407,41 +3439,74 @@ const InvestmentModule = {
         `).join('');
     },
 
-    triggerReview() {
+    async triggerReview() {
         const btn = document.getElementById('triggerReview');
         btn.textContent = '获取中...';
         btn.disabled = true;
+        try {
+            // 拉取真实行情（含持仓 + 上证指数）
+            const holdings = DataManager.getHoldings();
+            const codes = holdings.stocks.map(s => (s.code.startsWith('6') ? 'sh' : 'sz') + s.code);
+            codes.push('sh000001'); // 上证指数
+            const realMap = {};
+            try {
+                const resp = await fetch('https://qt.gtimg.cn/q=' + codes.join(','), { cache: 'no-cache' });
+                const text = await resp.text();
+                text.split(';').forEach(line => {
+                    const m = line.match(/v_(\w+)="(.*)"/);
+                    if (m && m[2]) {
+                        const f = m[2].split('~');
+                        realMap[m[1]] = { name: f[1], price: parseFloat(f[3]) || 0, prevClose: parseFloat(f[4]) || 0, open: parseFloat(f[5]) || 0 };
+                    }
+                });
+            } catch (e) { console.warn('复盘行情拉取失败', e); }
 
-        // 模拟复盘内容（实际版本会拉取真实市场数据）
-        setTimeout(() => {
+            const now = new Date();
+            const idx = realMap['sh000001'];
+            const idxTxt = idx && idx.price > 0
+                ? `上证指数 <strong>${idx.price.toFixed(2)}</strong>（${idx.prevClose>0?((idx.price-idx.prevClose)/idx.prevClose*100).toFixed(2):'--'}%）`
+                : '上证指数（行情获取中）';
+
+            const stockRows = holdings.stocks.map(s => {
+                const key = (s.code.startsWith('6') ? 'sh' : 'sz') + s.code;
+                const r = realMap[key];
+                if (r && r.price > 0 && s.buyPrice > 0) {
+                    const chg = r.prevClose > 0 ? (r.price - r.prevClose) / r.prevClose * 100 : 0;
+                    const profit = (r.price - s.buyPrice) / s.buyPrice * 100;
+                    const color = chg >= 0 ? '#e74c3c' : '#27ae60'; // A股红涨绿跌
+                    return `<li>${s.name}：现价 <strong>¥${r.price.toFixed(2)}</strong> <span style="color:${color}">${chg>=0?'+':''}${chg.toFixed(2)}%</span>，持仓盈亏 <span style="color:${profit>=0?'#e74c3c':'#27ae60'}">${profit>=0?'+':''}${profit.toFixed(2)}%</span>（成本 ¥${s.buyPrice}）</li>`;
+                }
+                return `<li>${s.name}：行情获取中（请确认持仓代码正确）</li>`;
+            }).join('');
+
             const reviewContent = document.getElementById('reviewContent');
             reviewContent.classList.remove('hidden');
             reviewContent.innerHTML = `
                 <div style="line-height:1.8;font-size:14px;">
-                    <h4 style="color:var(--primary);margin-bottom:8px;">📊 ${Utils.formatDate(new Date(), 'date')} 市场复盘</h4>
-                    <p><strong>大盘概况：</strong>今日A股三大指数涨跌互现，上证指数微跌0.2%，深成指上涨0.3%，创业板指上涨0.5%。两市成交额约8500亿，较昨日缩量。</p>
-                    <p><strong>持仓相关：</strong></p>
-                    <ul style="padding-left:18px;margin:8px 0;">
-                        <li>有色金属板块整体走强，华钰矿业(+1.37%)、山金国际(-1.82%)分化明显</li>
-                        <li>科技ETF震荡，芯片/科创50方向资金流入</li>
-                        <li>港股创新药ETF受政策利好小幅反弹</li>
-                    </ul>
-                    <p><strong>明日策略参考：</strong></p>
-                    <ol style="padding-left:18px;margin:8px 0;">
-                        <li>关注有色金属板块持续性，华钰矿业仓位较重，注意风险控制</li>
-                        <li>科技方向逢低关注，不追高</li>
-                        <li>整体保持观望，等老师进一步分析</li>
-                    </ol>
+                    <h4 style="color:var(--primary);margin-bottom:8px;">📊 ${Utils.formatDate(now,'date')} 我的真实持仓复盘</h4>
+                    <p><strong>大盘：</strong>${idxTxt}（数据来源：腾讯财经实时接口）</p>
+                    <p><strong>我的持仓（真实行情）：</strong></p>
+                    <ul style="padding-left:18px;margin:8px 0;">${stockRows}</ul>
                     <p style="margin-top:8px;font-size:12px;color:var(--text-light);">
-                        💡 以上为复盘写作<strong>参考示例</strong>。点击「刷新复盘」会拉取你的真实持仓价格（腾讯财经实时数据），具体盘面分析请结合老师当日观点。
+                        💡 以上<strong>价格和盈亏为真实数据</strong>。下方「复盘思路」为通用框架参考，具体买卖决策请结合老师当日观点与自己的风险承受力，新手务必控制仓位。
                     </p>
+                    <p style="font-size:13px;margin-top:6px;"><strong>复盘思路参考：</strong></p>
+                    <ol style="padding-left:18px;margin:4px 0;font-size:13px;">
+                        <li>看大盘方向：指数红绿决定今天整体氛围</li>
+                        <li>看自己持仓：现价 vs 成本价，盈利的考虑止盈，亏损的看是否破位</li>
+                        <li>看仓位：单只超过30%就要警惕，留足现金</li>
+                        <li>不追高、不恐慌割肉，按自己的计划来</li>
+                    </ol>
                 </div>
             `;
-
             document.querySelector('.review-placeholder').classList.add('hidden');
             btn.textContent = '刷新复盘 🔄';
             btn.disabled = false;
-        }, 800);
+        } catch (e) {
+            btn.textContent = '刷新复盘 🔄';
+            btn.disabled = false;
+            Utils.showToast('复盘获取失败，请重试');
+        }
     },
 
     renderKnowledge() {
